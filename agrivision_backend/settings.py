@@ -1,14 +1,18 @@
 import os
 from pathlib import Path
+import dj_database_url
+
 
 # -----------------------
 # BASE CONFIGURATION
 # -----------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "django-insecure-test-key"
-DEBUG = True
-ALLOWED_HOSTS = ["*"]  # For development; restrict later for production
+# Load sensitive config from environment variables
+SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-test-key")
+DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "agrivision-backend-fi4w.onrender.com").split(",")
+
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -25,7 +29,7 @@ INSTALLED_APPS = [
 
     # Local apps
     "users",
-    "images.apps.ImagesConfig",  # ✅ Use the AppConfig
+    "images.apps.ImagesConfig",  # Use AppConfig
 ]
 
 # -----------------------
@@ -69,14 +73,7 @@ WSGI_APPLICATION = "agrivision_backend.wsgi.application"
 # DATABASE (PostgreSQL)
 # -----------------------
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "agrivision_db",
-        "USER": "postgres",
-        "PASSWORD": "2005",  # Change to your DB password
-        "HOST": "localhost",
-        "PORT": "5432",
-    }
+    "default": dj_database_url.config(default=os.environ.get("DATABASE_URL"))
 }
 
 # -----------------------
@@ -93,7 +90,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # INTERNATIONALIZATION
 # -----------------------
 LANGUAGE_CODE = "en-us"
-TIME_ZONE = "Asia/Kolkata"  # local timezone
+TIME_ZONE = "Asia/Kolkata"  # Local timezone
 USE_I18N = True
 USE_TZ = True
 
@@ -123,7 +120,7 @@ REST_FRAMEWORK = {
 # -----------------------
 # CORS (for React Frontend)
 # -----------------------
-CORS_ALLOW_ALL_ORIGINS = "https://capstoneagrivision.vercel.app"
+CORS_ALLOW_ALL_ORIGINS = os.environ.get("CORS_ALLOW_ALL_ORIGINS", "True").lower() == "true"
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = [
     "content-type",
@@ -135,17 +132,16 @@ CORS_ALLOW_HEADERS = [
 # -----------------------
 # EMAIL BACKEND (for OTPs)
 # -----------------------
-# Option 1: For Local Testing (prints OTP in console)
+"""# Option 1: For Local Testing (prints OTP in console)
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
-# Option 2: For Real Emails via Gmail (Uncomment when ready)
 """
+# Option 2: For Real Emails via Gmail (Uncomment and set env vars accordingly)
+
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "20abhiram05@gmail.com"
-EMAIL_HOST_PASSWORD = "pqhb mqev wahq tavf"
-"""
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 
 DEFAULT_FROM_EMAIL = "AgriVision <noreply@agrivision.com>"
