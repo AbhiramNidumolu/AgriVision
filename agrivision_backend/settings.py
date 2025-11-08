@@ -5,7 +5,7 @@ import dj_database_url
 # -----------------------
 # BASE CONFIGURATION
 # -----------------------
-BASE_DIR = Path(_file).resolve().parent.parent   # ✅ FIXED (_file → _file_)
+BASE_DIR = Path(__file__).resolve().parent.parent  
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-test-key")
 DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
